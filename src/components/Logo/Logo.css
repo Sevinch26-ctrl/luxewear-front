@@ -1,0 +1,81 @@
+.lw-logo {
+  color: var(--color-primary);
+  overflow: visible;
+}
+
+.lw-logo__ring,
+.lw-logo__mark,
+.lw-logo__flourish {
+  fill: none;
+}
+
+.lw-logo__dot {
+  transform-origin: 138px 152px;
+}
+
+/* ─── STATIK HOLAT (Header va boshqa joylarda) ───────────── */
+.lw-logo:not(.lw-logo--animated) .lw-logo__ring,
+.lw-logo:not(.lw-logo--animated) .lw-logo__mark,
+.lw-logo:not(.lw-logo--animated) .lw-logo__flourish {
+  stroke-dasharray: none;
+}
+
+/* ─── ANIMATSIYALI HOLAT (Intro) ──────────────────────────
+   strokeDraw keyframe animations.css da e'lon qilingan
+   (stroke-dashoffset: 1000 -> 0), shu bois barcha chiziqlar
+   shu boshlang'ich holatdan boshlaydi. */
+.lw-logo--animated .lw-logo__ring {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  opacity: 0;
+  animation: strokeDraw 750ms ease-out forwards;
+  animation-delay: 120ms;
+}
+
+.lw-logo--animated .lw-logo__mark {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  opacity: 0;
+  animation: strokeDraw 500ms ease-out forwards;
+  animation-delay: 520ms;
+}
+
+.lw-logo--animated .lw-logo__flourish {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  opacity: 0;
+  animation: strokeDraw 380ms ease-out forwards;
+  animation-delay: 900ms;
+}
+
+.lw-logo--animated .lw-logo__dot {
+  opacity: 0;
+  transform: scale(0);
+  animation: dotPop 320ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation-delay: 1200ms;
+}
+
+@keyframes dotPop {
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Chiziqlar tugagach, butun belgiga bitta "yorqinlik" lahzasi */
+.lw-logo--glow {
+  animation: logoGlow 900ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lw-logo--animated .lw-logo__ring,
+  .lw-logo--animated .lw-logo__mark,
+  .lw-logo--animated .lw-logo__flourish,
+  .lw-logo--animated .lw-logo__dot {
+    animation: none;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    opacity: 1;
+    transform: none;
+  }
+  .lw-logo--glow {
+    animation: none;
+  }
+}

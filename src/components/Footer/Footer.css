@@ -1,0 +1,87 @@
+.footer {
+  background: linear-gradient(135deg, #18101f 0%, #241530 100%);
+  color: #e5e0eb;
+  padding: var(--space-16) 0 0;
+  margin-top: var(--space-16);
+}
+
+.footer-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-10);
+  margin-bottom: var(--space-10);
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  margin-bottom: var(--space-4);
+  color: #ffffff;
+}
+
+.footer-brand .lw-logo {
+  color: #C084FC;
+}
+
+.footer-slogan {
+  margin-bottom: var(--space-6);
+  color: #a89bb5;
+}
+
+.social-links {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.social-links a {
+  color: #ffffff;
+  transition: color var(--transition-fast);
+  font-size: var(--text-sm);
+}
+
+.social-links a:hover {
+  color: #C084FC;
+}
+
+.footer-col h3 {
+  font-size: 1.1rem;
+  margin-bottom: var(--space-5);
+  color: #ffffff;
+}
+
+.footer-col ul li {
+  margin-bottom: var(--space-3);
+}
+
+.footer-col ul a {
+  color: #a89bb5;
+  transition: all var(--transition-fast);
+  font-size: 0.92rem;
+}
+
+.footer-col ul a:hover {
+  color: #ffffff;
+  padding-left: 5px;
+}
+
+.footer-col p {
+  color: #a89bb5;
+  font-size: 0.92rem;
+  margin-bottom: var(--space-4);
+  line-height: 1.6;
+}
+
+.footer-bot-link {
+  display: inline-flex;
+}
+
+.footer-bottom {
+  text-align: center;
+  padding: var(--space-6);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #7a6d87;
+  font-size: 0.85rem;
+}

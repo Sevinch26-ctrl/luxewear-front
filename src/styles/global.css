@@ -1,0 +1,11 @@
+/* ═══════════════════════════════════════════════════════════
+   LuxeWear — Qo'shimcha global stillar
+   Asosiy dizayn tizimi (ranglar, reset, tipografiya) variables.css
+   da joylashgan — bu fayl faqat o'sha tizimga kirmagan, sahifa
+   darajasidagi joylashuv yordamchilarini o'z ichiga oladi.
+   ═══════════════════════════════════════════════════════════ */
+
+.main-content {
+  min-height: 100vh;
+  padding-top: var(--navbar-height);
+}

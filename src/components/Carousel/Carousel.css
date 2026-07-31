@@ -1,0 +1,218 @@
+/* Hero sifatida ishlatiladi — bosh sahifaning birinchi bo'limi */
+.carousel {
+  position: relative;
+  width: 100%;
+  height: 62vh;
+  min-height: 440px;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-bg));
+  opacity: 0;
+  transform: scale(0.97);
+  filter: blur(4px);
+}
+
+/* Bosh sahifa "Hero" bandi: fade + scale bilan ko'rinishga kelish —
+   faqat Intro tugagach (App.jsx dagi `ready` bayrog'i) */
+.carousel--ready {
+  animation: heroReveal 750ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes heroReveal {
+  from { opacity: 0; transform: scale(0.97); filter: blur(4px); }
+  to   { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .carousel--ready {
+    animation: none;
+  }
+}
+
+.carousel-inner {
+  display: flex;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.carousel-item {
+  min-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8%;
+  gap: var(--space-8);
+}
+
+.carousel-content {
+  flex: 1;
+  max-width: 560px;
+}
+
+.carousel-eyebrow {
+  display: inline-block;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: var(--space-3);
+  opacity: 0;
+  animation: fadeInUp 600ms ease 100ms forwards;
+}
+
+.carousel-content h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 600;
+  margin-bottom: var(--space-4);
+  color: var(--color-text);
+  opacity: 0;
+  animation: fadeInUp 700ms cubic-bezier(0.16, 1, 0.3, 1) 220ms forwards;
+}
+
+.carousel-content p {
+  font-size: 1.05rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-8);
+  max-width: 44ch;
+  opacity: 0;
+  animation: fadeInUp 700ms cubic-bezier(0.16, 1, 0.3, 1) 380ms forwards;
+}
+
+.carousel-buttons {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+/* Spetsifikatsiya: "Hero buttons appear with a slight delay" — ikkala
+   tugma ham bir-biridan keyin, matndan keyin paydo bo'ladi. */
+.carousel-btn {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: fadeInUp 550ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.carousel-btn--1 { animation-delay: 560ms; }
+.carousel-btn--2 { animation-delay: 700ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-eyebrow, .carousel-content h2, .carousel-content p, .carousel-btn {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
+
+.carousel-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: float 6s ease-in-out infinite;
+  max-width: 420px;
+}
+
+.carousel-image img {
+  max-width: 100%;
+  max-height: 46vh;
+  object-fit: contain;
+  border-radius: var(--radius-xl);
+}
+
+.carousel-image--placeholder {
+  width: 100%;
+  aspect-ratio: 3/4;
+  max-height: 46vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  border-radius: var(--radius-xl);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+}
+
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+  z-index: 2;
+}
+
+.carousel-control:hover {
+  background: var(--color-primary);
+  color: white;
+  transform: translateY(-50%) scale(1.08);
+}
+
+.carousel-control.prev { left: 20px; }
+.carousel-control.next { right: 20px; }
+
+.carousel-indicators {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 2;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background: var(--glass-border);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dot.active {
+  background: var(--color-primary);
+  width: 22px;
+  border-radius: var(--radius-full);
+}
+
+@media (max-width: 768px) {
+  .carousel {
+    height: auto;
+    min-height: unset;
+    padding-block: var(--space-10);
+  }
+  .carousel-item {
+    flex-direction: column-reverse;
+    text-align: center;
+    padding: var(--space-6) 5%;
+  }
+  .carousel-content {
+    max-width: 100%;
+  }
+  .carousel-content p {
+    margin-inline: auto;
+  }
+  .carousel-buttons {
+    justify-content: center;
+  }
+  .carousel-image {
+    max-width: 260px;
+  }
+}
