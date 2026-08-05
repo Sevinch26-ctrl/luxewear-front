@@ -12,6 +12,37 @@ export function getTelegramWebApp() {
   return window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 }
 
+/**
+ * Telegram Mini App SDK'ni dinamik yuklaydi (https://telegram.org/js/telegram-web-app.js).
+ * <head> dagi `defer` skript o'rniga — kritik render yo'lida main thread'ni
+ * band qilmaslik uchun faqat kerak bo'lganda (TelegramProvider bir marta
+ * chaqiradi, brauzer bo'sh qolganda) yuklanadi.
+ *
+ * Haqiqiy Telegram Mini App ichida SDK'ni Telegram klientining O'ZI skriptlar
+ * ishga tushishidan oldin in'ektsiya qiladi — bu holda `window.Telegram.WebApp`
+ * allaqachon mavjud bo'ladi va funksiya darhol tayyor deb qaytadi.
+ */
+let sdkPromise = null;
+export function ensureTelegramWebAppScript() {
+  if (typeof window === 'undefined') return Promise.resolve(null);
+  if (getTelegramWebApp()) return Promise.resolve(getTelegramWebApp());
+
+  if (!sdkPromise) {
+    sdkPromise = new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://telegram.org/js/telegram-web-app.js';
+      script.async = true;
+      script.onload = () => resolve(getTelegramWebApp());
+      // SDK yuklana olmasa (tarmoq xatosi va h.k.) ilovani osib qo'ymaymiz —
+      // Telegram'ga bog'liq funksiyalar xavfsiz tarzda "o'chirilgan" qoladi.
+      script.onerror = () => resolve(null);
+      document.head.appendChild(script);
+    });
+  }
+
+  return sdkPromise;
+}
+
 /** Chinakam Telegram Mini App ichida ochilganmi (shunchaki skript yuklanishi kifoya emas — initData ham bo'lishi kerak) */
 export function isTelegramWebApp() {
   const wa = getTelegramWebApp();

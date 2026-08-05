@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { initTelegramWebApp, isTelegramWebApp, telegramColorScheme, getTelegramUser } from '../lib/telegram';
+import { initTelegramWebApp, ensureTelegramWebAppScript, isTelegramWebApp, telegramColorScheme, getTelegramUser } from '../lib/telegram';
 
 export const TelegramContext = createContext({
   isTelegram: false,
@@ -23,15 +23,35 @@ export const TelegramProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    const wa = initTelegramWebApp();
-    if (wa) {
-      setState({
-        isTelegram: isTelegramWebApp(),
-        webApp: wa,
-        tgUser: getTelegramUser(),
-        colorScheme: telegramColorScheme(),
-      });
-    }
+    let cancelled = false;
+
+    // SDK'ni kritik render yo'lidan chiqarish: birinchi bo'sh qolganda
+    // (idle) yuklashni boshlaymiz — ertaroq emas.
+    const schedule = window.requestIdleCallback || ((cb) => setTimeout(cb, 1000));
+    const idleId = schedule(async () => {
+      try {
+        await ensureTelegramWebAppScript();
+        if (cancelled) return;
+        const wa = initTelegramWebApp();
+        if (wa) {
+          setState({
+            isTelegram: isTelegramWebApp(),
+            webApp: wa,
+            tgUser: getTelegramUser(),
+            colorScheme: telegramColorScheme(),
+          });
+        }
+      } catch (_) {
+        // SDK mavjud bo'lmasa ham ilova oddiy sayt sifatida ishlayveradi.
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      if (idleId && typeof window !== 'undefined' && window.cancelIdleCallback) {
+        window.cancelIdleCallback(idleId);
+      }
+    };
   }, []);
 
   return (

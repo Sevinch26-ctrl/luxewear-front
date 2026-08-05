@@ -7,6 +7,21 @@
     <meta name="description" content="LuxeWear — Zarafatli ayollar kiyimlari. Premium kolleksiyalar, yangi trendlar va maxsus taklif." />
     <meta name="keywords" content="ayollar kiyimlari, hijob, ko'ylak, abaya, premium fashion, luxewear" />
     <title>LuxeWear — Zarafat va Uslub</title>
+    <!-- Kritik minimal stillar: asosiy stylesheet yuklanmaguncha oq ekran
+         (white flash) bo'lmasligi uchun fon va shrift oilasi. Qiymatlar
+         src/styles/variables.css bilan sinxron — bu yerda duplikat qilish
+         atayin (inline, render-bloklamaydigan). -->
+    <style>
+      body {
+        background-color: #FAF8FC;
+        color: #2D2A32;
+        font-family: Inter, system-ui, -apple-system, sans-serif;
+      }
+      [data-theme="dark"] body {
+        background-color: #0F0F12;
+        color: #F5F5F5;
+      }
+    </style>
     <!-- Google Fonts: Playfair Display + Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,11 +29,10 @@
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <!-- Telegram Mini App SDK — oddiy brauzerda zararsiz, hech narsani o'zgartirmaydi.
-         defer: HTML parsing'ni bloklamaydi, lekin baribir main.jsx'dan OLDIN
-         (hujjatdagi tartib bo'yicha) ishga tushadi — TelegramProvider effekti
-         ishlaganda window.Telegram.WebApp allaqachon tayyor bo'ladi. -->
-    <script defer src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Telegram Mini App SDK oddiy brauzerda zararsiz, hech narsani o'zgartirmaydi.
+         Uni <head> da defer bilan yuklash kritik render yo'lida main thread'ni band
+         qilardi — endi u faqat brauzer bo'sh qolganida (idle) TelegramContext
+         orqali kechiktirib yuklanadi: src/lib/telegram.js -> ensureTelegramWebAppScript() -->
     <meta name="theme-color" content="#8B5CF6" />
   </head>
   <body>
