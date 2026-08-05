@@ -30,7 +30,12 @@ API.interceptors.response.use(
       // shu bois bu yerdagi yo'naltirish u yerda ham xavfsiz.
       const loginPath = '/kirish';
       if (!isTelegramWebApp() && window.location.pathname !== loginPath) {
-        window.location.href = loginPath;
+        // Foydalanuvchi qayerda bo'lsa ("next"), login'dan keyin AYNAN o'sha
+        // joyga qaytarish uchun — masalan checkout'da tizimdan chiqib qolgan
+        // bo'lsa, qaytadan kirgach yana boshidan savat/checkout'ga
+        // yurishga majbur bo'lmasin.
+        const next = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.href = `${loginPath}?next=${next}`;
       }
     }
     return Promise.reject(error);

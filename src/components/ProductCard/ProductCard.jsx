@@ -1,8 +1,12 @@
 import React, { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Heart, Check } from 'lucide-react';
 import { formatPrice, isNewProduct } from '../../utils/format';
 import { colorNameToHex } from '../../utils/colorMap';
+import { getImageUrl } from '../../utils/constants';
+import Lottie from 'lottie-react';
+import cartSuccessAnim from '../../assets/lottie/cart-success.json';
+import heartPopAnim from '../../assets/lottie/heart-pop.json';
 import { WishlistContext } from '../../context/WishlistContext';
 import { CartContext } from '../../context/CartContext';
 import { hapticImpact, hapticNotification } from '../../lib/telegram';
@@ -19,22 +23,35 @@ const ProductCard = ({ product, style }) => {
   const { addToCart } = useContext(CartContext);
   const [busy, setBusy] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+  const [justFavorited, setJustFavorited] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   if (!product) return null;
 
   const inWishlist = isInWishlist(product.id);
   const hasDiscount = product.discount_percent > 0;
-  const image = product.images && product.images.length > 0 ? product.images[0] : null;
+  const image = product.images && product.images.length > 0 ? getImageUrl(product.images[0]) : null;
   const isNew = isNewProduct(product.created_at);
   const outOfStock = product.stock <= 0;
   const detailLink = `/mahsulot/${product.id}`;
+  const navigate = useNavigate();
+  // Rang/o'lcham/variant tanlovi bor mahsulotni "tez qo'shish" orqali
+  // to'g'ridan-to'g'ri savatga tashlab bo'lmaydi — noto'g'ri rang/o'lchamda
+  // ketib qolishi mumkin. Bunday mahsulotlarda tugma mahsulot sahifasiga
+  // olib boradi, xuddi tugagan mahsulotlar uchun "Batafsil" kabi.
+  const requiresChoice = (product.variants?.length > 0) || (product.colors?.length > 0) || (product.sizes?.length > 0);
 
   const handleWishlist = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     hapticImpact('light');
+    const wasInWishlist = inWishlist;
     try {
       await toggleWishlist(product);
+      if (!wasInWishlist) {
+        setJustFavorited(true);
+        setTimeout(() => setJustFavorited(false), 900);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -44,6 +61,10 @@ const ProductCard = ({ product, style }) => {
     e.preventDefault();
     e.stopPropagation();
     if (outOfStock || busy) return;
+    if (requiresChoice) {
+      navigate(detailLink);
+      return;
+    }
     setBusy(true);
     try {
       await addToCart(product, null, 1);
@@ -61,8 +82,14 @@ const ProductCard = ({ product, style }) => {
     <div className="product-card" style={style}>
       <div className="product-image-wrapper">
         <Link to={detailLink}>
-          {image ? (
-            <img src={image} alt={product.name} className="product-image" loading="lazy" />
+          {image && !imgError ? (
+            <img
+              src={image}
+              alt={product.name}
+              className="product-image"
+              loading="lazy"
+              onError={() => setImgError(true)}
+            />
           ) : (
             <div className="product-image product-image--placeholder">
               <ProductImagePlaceholder colorName={product.colors?.[0]} />
@@ -84,12 +111,24 @@ const ProductCard = ({ product, style }) => {
         >
           {inWishlist ? <Heart size={18} fill="currentColor" /> : <Heart size={18} />}
         </button>
+        {justFavorited && (
+          <div className="lottie-burst lottie-burst--wishlist" aria-hidden="true">
+            <Lottie animationData={heartPopAnim} loop={false} autoplay style={{ width: 56, height: 56 }} />
+          </div>
+        )}
 
         <div className="quick-view-overlay">
           {!outOfStock ? (
-            <button className={`quick-view-btn ${justAdded ? 'is-added' : ''}`} onClick={handleQuickAdd} disabled={busy}>
-              {justAdded ? <>Qo'shildi <Check size={16} /></> : "Savatga qo'shish"}
-            </button>
+            <div className="quick-add-wrap">
+              <button className={`quick-view-btn ${justAdded ? 'is-added' : ''}`} onClick={handleQuickAdd} disabled={busy}>
+                {justAdded ? <>Qo'shildi <Check size={16} /></> : requiresChoice ? "Rang/o'lcham tanlash" : "Savatga qo'shish"}
+              </button>
+              {justAdded && (
+                <div className="lottie-burst" aria-hidden="true">
+                  <Lottie animationData={cartSuccessAnim} loop={false} autoplay style={{ width: 70, height: 70 }} />
+                </div>
+              )}
+            </div>
           ) : (
             <Link to={detailLink} className="quick-view-btn">Batafsil</Link>
           )}

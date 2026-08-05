@@ -1,16 +1,18 @@
 import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CheckCircle2, Banknote, CreditCard } from 'lucide-react';
+import { CheckCircle2, Banknote, CreditCard, LogIn } from 'lucide-react';
 import { CartContext } from '../../context/CartContext';
 import { AuthContext } from '../../context/AuthContext';
+import { TelegramContext } from '../../context/TelegramContext';
 import API from '../../services/api';
 import { formatPrice } from '../../utils/format';
 import { hapticNotification } from '../../lib/telegram';
 import './Checkout.css';
 
 const Checkout = () => {
-  const { cartItems, cartTotal, itemPrice, loading: cartLoading } = useContext(CartContext);
-  const { user } = useContext(AuthContext);
+  const { cartItems, cartTotal, itemPrice, loading: cartLoading, clearCart } = useContext(CartContext);
+  const { user, isAuthenticated, loading: authLoading } = useContext(AuthContext);
+  const { isTelegram } = useContext(TelegramContext);
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -41,6 +43,7 @@ const Checkout = () => {
       const { data } = await API.post('/orders/', form);
       hapticNotification('success');
       setPlacedOrder(data);
+      clearCart();
     } catch (err) {
       hapticNotification('error');
       setError(err.response?.data?.detail || "Buyurtma berishda xatolik yuz berdi. Qayta urinib ko'ring.");
@@ -72,6 +75,42 @@ const Checkout = () => {
         <h2>Savat bo'sh</h2>
         <p>Buyurtma berish uchun avval savatga mahsulot qo'shing</p>
         <Link to="/mahsulotlar" className="btn btn-primary" style={{ marginTop: 20 }}>Xarid qilish</Link>
+      </div>
+    );
+  }
+
+  // Buyurtma berish tizimga kirishni talab qiladi (backend shu orqali
+  // buyurtmani mijozga bog'laydi). Buni oldindan tekshirmasak, foydalanuvchi
+  // formani to'ldirib "Tasdiqlash"ni bosgach kutilmagan xatolikka duch kelib,
+  // "sotib olib bo'lmayapti" degan taassurot qoladi — shu bois aniq va
+  // qulay taklif ko'rsatamiz, savat esa (localStorage'da) saqlanib qoladi.
+  //
+  // Eslatma: Telegram Mini App ichida avtomatik kirish odatda muvaffaqiyatli
+  // bo'ladi, LEKIN kamdan-kam holatlarda (masalan initData muddati o'tgan)
+  // muvaffaqiyatsiz ham bo'lishi mumkin — shu holatni ham qamrab olamiz,
+  // aks holda foydalanuvchi baribir ishlamaydigan formaga duch kelardi.
+  if (!authLoading && !isAuthenticated) {
+    return (
+      <div className="container section empty-state text-center">
+        <div className="empty-state__icon"><LogIn size={44} strokeWidth={1.25} /></div>
+        {isTelegram ? (
+          <>
+            <h2>Hisobingizni tasdiqlab bo'lmadi</h2>
+            <p>Iltimos, ilovani qayta oching. Savatingiz saqlanadi.</p>
+            <button type="button" className="btn btn-primary" style={{ marginTop: 16 }} onClick={() => window.location.reload()}>
+              Qayta urinish
+            </button>
+          </>
+        ) : (
+          <>
+            <h2>Buyurtma berish uchun tizimga kiring</h2>
+            <p>Savatingiz saqlanadi — kirgach xuddi shu yerga qaytasiz.</p>
+            <div className="checkout-success__actions">
+              <Link to="/kirish?next=/checkout" className="btn btn-primary">Kirish</Link>
+              <Link to="/royxatdan-otish?next=/checkout" className="btn btn-outline">Ro'yxatdan o'tish</Link>
+            </div>
+          </>
+        )}
       </div>
     );
   }

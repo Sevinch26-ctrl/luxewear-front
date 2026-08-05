@@ -3,7 +3,7 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
   display: block;
-  aspect-ratio: 4/5;
+  aspect-ratio: 3/4;
   box-shadow: var(--shadow-card);
   opacity: 0;
   transform: translateY(24px) scale(0.97);
@@ -29,7 +29,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3.5rem;
+  font-size: 2.25rem;
   background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
 }
 
@@ -46,7 +46,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%);
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%);
   transition: background 0.3s ease;
 }
 
@@ -55,31 +55,33 @@
 }
 
 .category-card:hover .category-overlay {
-  background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
+  background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.75) 100%);
 }
 
 .category-info {
   position: absolute;
-  bottom: 30px;
-  left: 30px;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
   color: white;
   z-index: 2;
   transition: transform 0.3s ease;
 }
 
 .category-card:hover .category-info {
-  transform: translateY(-10px);
+  transform: translateY(-6px);
 }
 
 .category-info h3 {
-  font-size: 1.8rem;
-  margin-bottom: 5px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 3px;
   text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .category-info p {
-  font-size: 1rem;
-  opacity: 0.9;
+  font-size: 0.7rem;
+  opacity: 0.85;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
 }

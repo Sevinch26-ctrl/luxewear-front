@@ -3,6 +3,10 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Frown, Star, Heart, Check } from 'lucide-react';
 import { formatPrice } from '../../utils/format';
 import { colorNameToHex } from '../../utils/colorMap';
+import { getImageUrl } from '../../utils/constants';
+import Lottie from 'lottie-react';
+import cartSuccessAnim from '../../assets/lottie/cart-success.json';
+import heartPopAnim from '../../assets/lottie/heart-pop.json';
 import API from '../../services/api';
 import { CartContext } from '../../context/CartContext';
 import { WishlistContext } from '../../context/WishlistContext';
@@ -32,6 +36,8 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [addBusy, setAddBusy] = useState(false);
   const [addedMsg, setAddedMsg] = useState(false);
+  const [justFavorited, setJustFavorited] = useState(false);
+  const [selectionError, setSelectionError] = useState('');
 
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
   const [reviewBusy, setReviewBusy] = useState(false);
@@ -47,8 +53,18 @@ const ProductDetail = () => {
         if (cancelled) return;
         setProduct(data);
         setActiveImage(data.images && data.images[0]);
-        if (data.variants && data.variants.length > 0) {
+        // Faqat BITTA variant bo'lsa avtomatik belgilanadi, chunki bunda
+        // haqiqiy "tanlov" yo'q. 2+ variant/rang bo'lsa, mijoz ANIQ o'zi
+        // tanlashi kerak — aks holda noto'g'ri rang/o'lchamda buyurtma
+        // ketib qolishi mumkin (qarang: handleAddToCart'dagi tekshiruv).
+        if (data.variants && data.variants.length === 1) {
           setSelectedVariant(data.variants[0]);
+          if (data.variants[0].image) setActiveImage(data.variants[0].image);
+        } else if ((!data.variants || data.variants.length === 0) && data.colors && data.colors.length === 1) {
+          setSelectedColor(data.colors[0]);
+        }
+        if ((!data.variants || data.variants.length === 0) && data.sizes && data.sizes.length === 1) {
+          setSelectedSize(data.sizes[0]);
         }
         const [simRes, revRes] = await Promise.all([
           API.get(`/recommendations/similar/${id}`).catch(() => ({ data: [] })),
@@ -72,11 +88,61 @@ const ProductDetail = () => {
   const stock = hasVariants ? (selectedVariant?.stock ?? 0) : (product?.stock ?? 0);
   const outOfStock = stock <= 0;
 
+  /**
+   * Variant tanlanganda — variantning O'ZIGA TEGISHLI rasmi bo'lsa
+   * (backendda ProductVariant.image), asosiy rasm o'sha rasmga o'tadi.
+   */
+  const handleVariantSelect = (v) => {
+    setSelectedVariant(v);
+    setSelectionError('');
+    if (v.image) setActiveImage(v.image);
+  };
+
+  /**
+   * Rang bosilganda mos rasmga o'tish: mahsulot rasmlari `images[i]` va
+   * ranglar `colors[i]` BIR XIL TARTIBDA saqlanadi (admin panelda rasm
+   * yuklashda shu tartibda qo'shiladi) — shuning uchun indeks bo'yicha
+   * to'g'ridan-to'g'ri moslashtiramiz. Agar shu indeksga mos rasm mavjud
+   * bo'lmasa (masalan ranglar soni rasmlar sonidan ko'p bo'lsa), joriy
+   * rasm o'zgarishsiz qoladi — xato chiqarish o'rniga muloyim tushish.
+   */
+  const handleColorSelect = (color, idx) => {
+    setSelectedColor(color);
+    setSelectionError('');
+    if (product?.images && product.images[idx]) {
+      setActiveImage(product.images[idx]);
+    }
+  };
+
   const handleAddToCart = async () => {
     if (outOfStock || addBusy) return;
+
+    // Variant (rang+o'lcham birga) bor mahsulotlarda variant tanlanishi shart.
+    if (hasVariants && !selectedVariant) {
+      setSelectionError("Iltimos, avval variantni tanlang");
+      return;
+    }
+    // Variant'i yo'q, lekin rang variantlari bor bo'lsa — rang tanlanishi shart.
+    if (!hasVariants && product.colors?.length > 0 && !selectedColor) {
+      setSelectionError("Iltimos, avval rangni tanlang");
+      return;
+    }
+    // Xuddi shunday — o'lcham variantlari bor bo'lsa, o'lcham tanlanishi shart.
+    if (!hasVariants && product.sizes?.length > 0 && !selectedSize) {
+      setSelectionError("Iltimos, avval o'lchamni tanlang");
+      return;
+    }
+
+    setSelectionError('');
     setAddBusy(true);
     try {
-      await addToCart(product, hasVariants ? selectedVariant?.id : null, quantity);
+      await addToCart(
+        product,
+        hasVariants ? selectedVariant?.id : null,
+        quantity,
+        hasVariants ? null : selectedColor,
+        hasVariants ? null : selectedSize,
+      );
       hapticNotification('success');
       setAddedMsg(true);
       setTimeout(() => setAddedMsg(false), 2000);
@@ -139,16 +205,23 @@ const ProductDetail = () => {
         <div className="product-gallery">
           <div className="main-image-container">
             {activeImage ? (
-              <img src={activeImage} alt={product.name} className="main-image" />
-            ) : (
-              <div className="main-image main-image--placeholder"><ProductImagePlaceholder colorName={selectedColor || product.colors?.[0]} /></div>
-            )}
+              <img
+                key={activeImage}
+                src={getImageUrl(activeImage)}
+                alt={product.name}
+                className="main-image image-swap-fade"
+                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+              />
+            ) : null}
+            <div className="main-image main-image--placeholder" style={activeImage ? { display: 'none' } : undefined}>
+              <ProductImagePlaceholder colorName={selectedColor || product.colors?.[0]} />
+            </div>
           </div>
           {images.length > 1 && (
             <div className="thumbnail-list">
               {images.map((img, idx) => (
                 <img
-                  key={idx} src={img} alt="" loading="lazy"
+                  key={idx} src={getImageUrl(img)} alt="" loading="lazy"
                   className={`thumbnail ${activeImage === img ? 'active' : ''}`}
                   onClick={() => setActiveImage(img)}
                 />
@@ -177,13 +250,13 @@ const ProductDetail = () => {
 
           {hasVariants ? (
             <div className="selection-group">
-              <h4>Variant tanlang</h4>
+              <h4>Variant tanlang {!selectedVariant && <span className="required-dot" />}</h4>
               <div className="size-options">
                 {product.variants.map((v) => (
                   <button
                     key={v.id}
                     className={`size-btn ${selectedVariant?.id === v.id ? 'active' : ''}`}
-                    onClick={() => setSelectedVariant(v)}
+                    onClick={() => handleVariantSelect(v)}
                     disabled={v.stock <= 0}
                   >
                     {[v.color, v.size].filter(Boolean).join(' / ')}{v.stock <= 0 ? ' (tugagan)' : ''}
@@ -195,7 +268,7 @@ const ProductDetail = () => {
             <>
               {product.colors && product.colors.length > 0 && (
                 <div className="selection-group">
-                  <h4>Rang</h4>
+                  <h4>Rang {!selectedColor && <span className="required-dot" />}</h4>
                   <div className="color-options">
                     {product.colors.map((color, idx) => (
                       <button
@@ -203,7 +276,7 @@ const ProductDetail = () => {
                         className={`color-btn ${selectedColor === color ? 'active' : ''}`}
                         style={{ backgroundColor: colorNameToHex(color) }}
                         title={color}
-                        onClick={() => setSelectedColor(color)}
+                        onClick={() => handleColorSelect(color, idx)}
                       />
                     ))}
                   </div>
@@ -211,13 +284,13 @@ const ProductDetail = () => {
               )}
               {product.sizes && product.sizes.length > 0 && (
                 <div className="selection-group">
-                  <h4>O'lcham</h4>
+                  <h4>O'lcham {!selectedSize && <span className="required-dot" />}</h4>
                   <div className="size-options">
                     {product.sizes.map((size) => (
                       <button
                         key={size}
                         className={`size-btn ${selectedSize === size ? 'active' : ''}`}
-                        onClick={() => setSelectedSize(size)}
+                        onClick={() => { setSelectedSize(size); setSelectionError(''); }}
                       >{size}</button>
                     ))}
                   </div>
@@ -225,6 +298,8 @@ const ProductDetail = () => {
               )}
             </>
           )}
+
+          {selectionError && <div className="selection-error">{selectionError}</div>}
 
           <div className="selection-group quantity-group">
             <h4>Miqdor</h4>
@@ -237,16 +312,37 @@ const ProductDetail = () => {
           </div>
 
           <div className="action-buttons">
-            <button className={`btn-add-cart ${addedMsg ? 'is-added' : ''}`} onClick={handleAddToCart} disabled={outOfStock || addBusy}>
-              {outOfStock ? 'Tugagan' : addedMsg ? <>Savatga qo'shildi <Check size={16} /></> : "Savatga qo'shish"}
-            </button>
-            <button
-              className={`btn-wishlist ${inWishlist ? 'is-active' : ''}`}
-              onClick={() => toggleWishlist(product)}
-              aria-label="Sevimlilarga qo'shish"
-            >
-              {inWishlist ? <Heart size={20} fill="currentColor" /> : <Heart size={20} />}
-            </button>
+            <div className="btn-add-cart-wrap">
+              <button className={`btn-add-cart ${addedMsg ? 'is-added' : ''}`} onClick={handleAddToCart} disabled={outOfStock || addBusy}>
+                {outOfStock ? 'Tugagan' : addedMsg ? <>Savatga qo'shildi <Check size={16} /></> : "Savatga qo'shish"}
+              </button>
+              {addedMsg && (
+                <div className="lottie-burst" aria-hidden="true">
+                  <Lottie animationData={cartSuccessAnim} loop={false} autoplay style={{ width: 90, height: 90 }} />
+                </div>
+              )}
+            </div>
+            <div className="btn-wishlist-wrap">
+              <button
+                className={`btn-wishlist ${inWishlist ? 'is-active' : ''}`}
+                onClick={() => {
+                  const wasInWishlist = inWishlist;
+                  toggleWishlist(product);
+                  if (!wasInWishlist) {
+                    setJustFavorited(true);
+                    setTimeout(() => setJustFavorited(false), 900);
+                  }
+                }}
+                aria-label="Sevimlilarga qo'shish"
+              >
+                {inWishlist ? <Heart size={20} fill="currentColor" /> : <Heart size={20} />}
+              </button>
+              {justFavorited && (
+                <div className="lottie-burst" aria-hidden="true">
+                  <Lottie animationData={heartPopAnim} loop={false} autoplay style={{ width: 70, height: 70 }} />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

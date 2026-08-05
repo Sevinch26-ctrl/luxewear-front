@@ -62,6 +62,8 @@ export const CartProvider = ({ children }) => {
             await API.post('/cart/', {
               product_id: item.product_id,
               variant_id: item.variant_id || null,
+              color: item.color || null,
+              size: item.size || null,
               quantity: item.quantity,
             });
           } catch (err) {
@@ -77,11 +79,13 @@ export const CartProvider = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, authLoading]);
 
-  const addToCart = async (product, variantId = null, quantity = 1) => {
+  const addToCart = async (product, variantId = null, quantity = 1, color = null, size = null) => {
     if (isAuthenticated) {
       const { data } = await API.post('/cart/', {
         product_id: product.id,
         variant_id: variantId,
+        color: variantId ? null : color,
+        size: variantId ? null : size,
         quantity,
       });
       setCartItems((prev) => {
@@ -99,10 +103,10 @@ export const CartProvider = ({ children }) => {
     // Mehmon: lokal holatda saqlash
     let updated;
     setCartItems((prev) => {
-      const existing = prev.find((i) => i.product_id === product.id && i.variant_id === variantId);
+      const existing = prev.find((i) => i.product_id === product.id && i.variant_id === variantId && i.color === color && i.size === size);
       if (existing) {
         updated = prev.map((i) =>
-          i.product_id === product.id && i.variant_id === variantId
+          i.product_id === product.id && i.variant_id === variantId && i.color === color && i.size === size
             ? { ...i, quantity: i.quantity + quantity }
             : i
         );
@@ -110,9 +114,11 @@ export const CartProvider = ({ children }) => {
         updated = [
           ...prev,
           {
-            id: `local-${product.id}-${variantId || 'default'}`,
+            id: `local-${product.id}-${variantId || 'default'}-${color || ''}-${size || ''}`,
             product_id: product.id,
             variant_id: variantId,
+            color: variantId ? null : color,
+            size: variantId ? null : size,
             quantity,
             product,
             variant: null,

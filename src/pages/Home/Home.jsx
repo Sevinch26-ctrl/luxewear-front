@@ -6,10 +6,13 @@ import ProductCard from '../../components/ProductCard/ProductCard';
 import CategoryCard from '../../components/CategoryCard/CategoryCard';
 import API from '../../services/api';
 import { useScrollReveal } from '../../hooks/useScrollReveal';
+import heroCollection from '../../assets/hero/hero-collection.jpg';
+import heroEvening from '../../assets/hero/hero-evening.jpg';
 import './Home.css';
 
 const HERO_SLIDES = [
   {
+    image: heroCollection,
     eyebrow: "2026 Kolleksiyasi",
     title: 'Nafislik har bir tafsilotda',
     description: "Yangi mavsum uchun eng sara liboslar to'plami — o'zingizga mos uslubni toping.",
@@ -19,6 +22,7 @@ const HERO_SLIDES = [
     secondaryLink: '/kategoriyalar',
   },
   {
+    image: heroEvening,
     eyebrow: 'Maxsus taklif',
     title: 'Oqshom liboslari to\'plami',
     description: 'Maxsus kunlar uchun takrorlanmas ko\'rinish va nafislik — 20% gacha chegirma bilan.',

@@ -3,26 +3,47 @@ import { Link } from 'react-router-dom';
 import { Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import './Carousel.css';
 
+const AUTOPLAY_MS = 6000;
+const SWIPE_THRESHOLD = 50;
+
 /**
  * Bosh sahifaning "Hero" bo'limi sifatida ishlatiladi: slaydlar avtomatik
- * almashadi (sichqoncha ustida to'xtaydi), va `ready` true bo'lgach
- * fade+scale bilan ko'rinadi, tugmalar esa ozgina kechikib paydo bo'ladi.
+ * almashadi (sichqoncha ustida yoki barmoq bilan ushlab turilganda
+ * to'xtaydi), pastdagi indikatorlar keyingi slaydgacha qolgan vaqtni
+ * chiziq sifatida to'ldirib ko'rsatadi. Mobil qurilmalarda barmoq bilan
+ * suryish (swipe) orqali ham almashtirish mumkin.
  */
 const Carousel = ({ items = [], ready = true }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const timerRef = useRef(null);
+  const touchStartX = useRef(null);
 
   useEffect(() => {
     if (paused || items.length <= 1) return;
     timerRef.current = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % items.length);
-    }, 6000);
+    }, AUTOPLAY_MS);
     return () => clearInterval(timerRef.current);
-  }, [paused, items.length]);
+  }, [paused, items.length, currentIndex]);
 
   const nextSlide = () => setCurrentIndex((prev) => (prev + 1) % items.length);
   const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    setPaused(true);
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current == null) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(delta) > SWIPE_THRESHOLD) {
+      if (delta < 0) nextSlide(); else prevSlide();
+    }
+    touchStartX.current = null;
+    setPaused(false);
+  };
 
   if (!items.length) return null;
 
@@ -31,6 +52,8 @@ const Carousel = ({ items = [], ready = true }) => {
       className={`carousel ${ready ? 'carousel--ready' : ''}`}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       <div
         className="carousel-inner"
@@ -69,11 +92,17 @@ const Carousel = ({ items = [], ready = true }) => {
 
           <div className="carousel-indicators">
             {items.map((_, idx) => (
-              <span
+              <button
                 key={idx}
+                type="button"
                 className={`dot ${idx === currentIndex ? 'active' : ''}`}
                 onClick={() => setCurrentIndex(idx)}
-              />
+                aria-label={`${idx + 1}-slaydga o'tish`}
+              >
+                {idx === currentIndex && !paused && (
+                  <span className="dot-fill" key={`fill-${currentIndex}`} />
+                )}
+              </button>
             ))}
           </div>
         </>

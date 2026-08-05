@@ -178,18 +178,40 @@
 }
 
 .dot {
+  position: relative;
   width: 8px;
   height: 8px;
   background: var(--glass-border);
+  border: none;
+  padding: 0;
   border-radius: 50%;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  overflow: hidden;
+  transition: width var(--transition-fast), border-radius var(--transition-fast);
 }
 
 .dot.active {
-  background: var(--color-primary);
-  width: 22px;
+  background: var(--glass-border);
+  width: 30px;
   border-radius: var(--radius-full);
+}
+
+.dot-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--color-primary);
+  transform-origin: left center;
+  transform: scaleX(0);
+  animation: dotFillProgress 6s linear forwards;
+}
+
+@keyframes dotFillProgress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot-fill { animation: none; transform: scaleX(1); }
 }
 
 @media (max-width: 768px) {

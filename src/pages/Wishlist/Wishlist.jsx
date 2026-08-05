@@ -2,7 +2,8 @@ import React, { useContext } from 'react';
 import { WishlistContext } from '../../context/WishlistContext';
 import ProductCard from '../../components/ProductCard/ProductCard';
 import { Link } from 'react-router-dom';
-import { Heart } from 'lucide-react';
+import Lottie from 'lottie-react';
+import emptyFloatAnim from '../../assets/lottie/empty-float.json';
 
 const Wishlist = () => {
   const { wishlistItems, loading } = useContext(WishlistContext);
@@ -22,7 +23,9 @@ const Wishlist = () => {
   if (wishlistItems.length === 0) {
     return (
       <div className="container section empty-state text-center">
-        <div className="empty-state__icon"><Heart size={48} strokeWidth={1.25} /></div>
+        <div className="empty-state__icon" aria-hidden="true">
+          <Lottie animationData={emptyFloatAnim} loop autoplay style={{ width: 160, height: 130, margin: '0 auto' }} />
+        </div>
         <h2>Sevimlilar ro'yxati bo'sh</h2>
         <p>Sizga yoqqan mahsulotlarni yurakchani bosib saqlab qo'yishingiz mumkin</p>
         <Link to="/mahsulotlar" className="btn btn-primary" style={{ marginTop: 20 }}>Katalogga o'tish</Link>

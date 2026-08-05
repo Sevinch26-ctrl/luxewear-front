@@ -1,10 +1,13 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
+import Lottie from 'lottie-react';
 import { CartContext } from '../../context/CartContext';
 import { AuthContext } from '../../context/AuthContext';
 import { formatPrice } from '../../utils/format';
+import { getImageUrl } from '../../utils/constants';
 import ProductImagePlaceholder from '../../components/ProductImagePlaceholder/ProductImagePlaceholder';
+import emptyFloatAnim from '../../assets/lottie/empty-float.json';
 import './Cart.css';
 
 const Cart = () => {
@@ -30,6 +33,9 @@ const Cart = () => {
   if (cartItems.length === 0) {
     return (
       <div className="container section empty-state text-center reveal is-visible">
+        <div className="empty-state__lottie" aria-hidden="true">
+          <Lottie animationData={emptyFloatAnim} loop autoplay style={{ width: 160, height: 130, margin: '0 auto' }} />
+        </div>
         <h2>Savat bo'sh</h2>
         <p>Hali hech qanday mahsulot qo'shmadingiz</p>
         <Link to="/mahsulotlar" className="btn btn-primary" style={{ display: 'inline-block', marginTop: '20px' }}>
@@ -47,12 +53,21 @@ const Cart = () => {
         <div className="cart-items">
           {cartItems.map((item) => {
             const product = item.product || {};
-            const image = product.images && product.images[0];
+            const image = product.images && product.images[0] ? getImageUrl(product.images[0]) : null;
             const price = itemPrice(item);
             return (
               <div className="cart-row" key={item.id}>
                 <div className="cart-item-info">
-                  {image ? <img src={image} alt={product.name} /> : <div className="cart-item-info-placeholder"><ProductImagePlaceholder colorName={item.variant?.color || product.colors?.[0]} /></div>}
+                  {image ? (
+                    <img
+                      src={image}
+                      alt={product.name}
+                      onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                    />
+                  ) : null}
+                  <div className="cart-item-info-placeholder" style={image ? { display: 'none' } : undefined}>
+                    <ProductImagePlaceholder colorName={item.variant?.color || product.colors?.[0]} />
+                  </div>
                   <div>
                     <Link to={`/mahsulot/${product.id}`}>{product.name}</Link>
                     {item.variant && (

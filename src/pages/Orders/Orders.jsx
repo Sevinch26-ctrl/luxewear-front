@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { ChevronDown, ArrowLeft, PackageX } from 'lucide-react';
 import API from '../../services/api';
 import { formatPrice, formatDate } from '../../utils/format';
+import { getImageUrl } from '../../utils/constants';
 import ProductImagePlaceholder from '../../components/ProductImagePlaceholder/ProductImagePlaceholder';
 import './Orders.css';
 
@@ -42,10 +43,9 @@ function OrderCard({ order, defaultOpen = false }) {
             {order.items.map((item) => (
               <div className="order-item-row" key={item.id}>
                 {item.product_image ? (
-                  <img src={item.product_image} alt="" />
-                ) : (
-                  <div className="order-item-row__placeholder"><ProductImagePlaceholder /></div>
-                )}
+                  <img src={getImageUrl(item.product_image)} alt="" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                ) : null}
+                <div className="order-item-row__placeholder" style={item.product_image ? { display: 'none' } : undefined}><ProductImagePlaceholder /></div>
                 <div className="order-item-row__info">
                   <span>{item.product_name}</span>
                   {item.variant_info && <small>{item.variant_info}</small>}
