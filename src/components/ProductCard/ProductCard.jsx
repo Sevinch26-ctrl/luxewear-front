@@ -4,6 +4,7 @@ import { Heart, Check } from 'lucide-react';
 import { formatPrice, isNewProduct } from '../../utils/format';
 import { colorNameToHex } from '../../utils/colorMap';
 import { getImageUrl } from '../../utils/constants';
+import Lottie from 'lottie-react';
 import cartSuccessAnim from '../../assets/lottie/cart-success.json';
 import heartPopAnim from '../../assets/lottie/heart-pop.json';
 import { WishlistContext } from '../../context/WishlistContext';
@@ -11,12 +12,6 @@ import { CartContext } from '../../context/CartContext';
 import { hapticImpact, hapticNotification } from '../../lib/telegram';
 import ProductImagePlaceholder from '../ProductImagePlaceholder/ProductImagePlaceholder';
 import './ProductCard.css';
-
-// lottie-react (ichida lottie-web dvigateli) Bosh sahifadagi ProductCard
-// orqali kritik yuklash yo'liga kirib qolmasligi uchun — faqat foydalanuvchi
-// "sevimlilarga qo'shish" yoki "savatga qo'shish" tugmasini bosganda, ya'ni
-// burst animatsiya ROSTDAN ko'rsatilish kerak bo'lgandagina yuklanadi.
-const Lottie = React.lazy(() => import('lottie-react'));
 
 /**
  * `style` prop — stagger animatsiyasi uchun `--stagger-index` CSS
@@ -118,9 +113,7 @@ const ProductCard = ({ product, style }) => {
         </button>
         {justFavorited && (
           <div className="lottie-burst lottie-burst--wishlist" aria-hidden="true">
-            <React.Suspense fallback={null}>
-              <Lottie animationData={heartPopAnim} loop={false} autoplay style={{ width: 56, height: 56 }} />
-            </React.Suspense>
+            <Lottie animationData={heartPopAnim} loop={false} autoplay style={{ width: 56, height: 56 }} />
           </div>
         )}
 
@@ -132,9 +125,7 @@ const ProductCard = ({ product, style }) => {
               </button>
               {justAdded && (
                 <div className="lottie-burst" aria-hidden="true">
-                  <React.Suspense fallback={null}>
-                    <Lottie animationData={cartSuccessAnim} loop={false} autoplay style={{ width: 70, height: 70 }} />
-                  </React.Suspense>
+                  <Lottie animationData={cartSuccessAnim} loop={false} autoplay style={{ width: 70, height: 70 }} />
                 </div>
               )}
             </div>

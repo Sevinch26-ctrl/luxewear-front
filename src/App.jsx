@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -11,30 +11,20 @@ import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import Intro from './components/Intro/Intro';
 
-// Sahifalar — route asosida bo'lib yuklanadi (lazy). Bosh sahifa faqat
-// o'ziga kerakli kodni oladi; lottie, auth, checkout va h.k. faqat o'sha
-// sahifa ochilganda yuklanadi. Bu boshlang'ich JS hajmini keskin kamaytiradi.
-const Home = lazy(() => import('./pages/Home/Home'));
-const Categories = lazy(() => import('./pages/Categories/Categories'));
-const Products = lazy(() => import('./pages/Products/Products'));
-const ProductDetail = lazy(() => import('./pages/ProductDetail/ProductDetail'));
-const Cart = lazy(() => import('./pages/Cart/Cart'));
-const Wishlist = lazy(() => import('./pages/Wishlist/Wishlist'));
-const Search = lazy(() => import('./pages/Search/Search'));
-const Login = lazy(() => import('./pages/Auth/Login'));
-const Register = lazy(() => import('./pages/Auth/Register'));
-const Profile = lazy(() => import('./pages/Profile/Profile'));
-const Orders = lazy(() => import('./pages/Orders/Orders'));
-const Checkout = lazy(() => import('./pages/Checkout/Checkout'));
-const NotFound = lazy(() => import('./pages/Errors/NotFound'));
-
-function PageFallback() {
-  return (
-    <div className="flex-center" style={{ minHeight: '40vh' }}>
-      <div className="spinner" role="status" aria-label="Yuklanmoqda" />
-    </div>
-  );
-}
+// Pages
+import Home from './pages/Home/Home';
+import Categories from './pages/Categories/Categories';
+import Products from './pages/Products/Products';
+import ProductDetail from './pages/ProductDetail/ProductDetail';
+import Cart from './pages/Cart/Cart';
+import Wishlist from './pages/Wishlist/Wishlist';
+import Search from './pages/Search/Search';
+import Login from './pages/Auth/Login';
+import Register from './pages/Auth/Register';
+import Profile from './pages/Profile/Profile';
+import Orders from './pages/Orders/Orders';
+import Checkout from './pages/Checkout/Checkout';
+import NotFound from './pages/Errors/NotFound';
 
 /**
  * Sahifa almashganda tarkibni nozik fade+lift bilan almashtiradi
@@ -75,8 +65,7 @@ function CustomerSite() {
         <Header ready={ready} />
         <main className="main-content">
           <PageTransition>
-            <Suspense fallback={<PageFallback />}>
-              <Routes>
+            <Routes>
               <Route path="/" element={<Home ready={ready} />} />
               <Route path="/kategoriyalar" element={<Categories />} />
               <Route path="/mahsulotlar" element={<Products />} />
@@ -91,8 +80,7 @@ function CustomerSite() {
               <Route path="/buyurtmalar" element={<Orders />} />
               <Route path="/buyurtmalar/:id" element={<Orders />} />
               <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
+            </Routes>
           </PageTransition>
         </main>
         <Footer />
