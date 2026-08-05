@@ -27,7 +27,7 @@ const Products = () => {
   const [maxPrice, setMaxPrice] = useState(searchParams.get('max_price') || '');
 
   useEffect(() => {
-    API.get('/categories/').then((res) => setCategories(res.data || [])).catch(() => {});
+    API.get('/categories/').then((res) => setCategories(Array.isArray(res.data) ? res.data : [])).catch(() => {});
   }, []);
 
   const fetchProducts = useCallback(async () => {
@@ -40,7 +40,7 @@ const Products = () => {
       if (minPrice) params.min_price = minPrice;
       if (maxPrice) params.max_price = maxPrice;
       const { data } = await API.get('/products/', { params });
-      setProducts(data.items || []);
+      setProducts(Array.isArray(data.items) ? data.items : []);
       setPagination({ total: data.total, pages: data.pages });
     } catch (err) {
       console.error('Mahsulotlarni yuklashda xato', err);

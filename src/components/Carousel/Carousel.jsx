@@ -76,7 +76,12 @@ const Carousel = ({ items = [], ready = true }) => {
             </div>
             <div className="carousel-image">
               {item.image ? (
-                <img src={item.image} alt={item.title} />
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  fetchpriority={index === 0 ? 'high' : 'auto'}
+                />
               ) : (
                 <div className="carousel-image--placeholder" aria-hidden="true"><Sparkles size={40} strokeWidth={1.25} /></div>
               )}

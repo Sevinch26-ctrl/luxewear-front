@@ -10,7 +10,7 @@ const Categories = () => {
   useEffect(() => {
     let cancelled = false;
     API.get('/categories/')
-      .then((res) => { if (!cancelled) setCategories(res.data || []); })
+      .then((res) => { if (!cancelled) setCategories(Array.isArray(res.data) ? res.data : []); })
       .catch((err) => console.error('Kategoriyalarni yuklashda xato', err))
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
