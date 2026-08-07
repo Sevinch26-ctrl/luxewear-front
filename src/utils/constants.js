@@ -39,3 +39,10 @@ export const COLORS = {
 };
 
 export const SIZE_OPTIONS = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
+// Telegram bot username — oldin kodda qattiq yozilgan edi ("luxewear_bot"),
+// bu esa boshqa (noto'g'ri) botga yo'naltirishga sabab bo'lgan. Endi .env
+// faylidagi VITE_TELEGRAM_BOT_USERNAME orqali sozlanadi — @BotFather'dan
+// olingan HAQIQIY bot username'ini shu yerga yozing (@ belgisisiz).
+export const TELEGRAM_BOT_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || 'luxewear_bot';
+export const TELEGRAM_BOT_URL = `https://t.me/${TELEGRAM_BOT_USERNAME}`;

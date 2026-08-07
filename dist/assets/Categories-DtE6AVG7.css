@@ -1,0 +1,1 @@
+.page-header{text-align:center;margin-bottom:var(--space-12)}.page-header h1{font-family:var(--font-display);font-size:var(--text-5xl);margin-bottom:10px;color:var(--color-text)}.page-header p{color:var(--color-text-secondary);font-size:1.1rem}.categories-grid-main{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:var(--space-8)}

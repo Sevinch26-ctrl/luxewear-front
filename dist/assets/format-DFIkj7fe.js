@@ -1,0 +1,1 @@
+const n=t=>t==null?"":new Intl.NumberFormat("uz-UZ").format(t)+" so'm",r=t=>{if(!t)return"";const e=new Date(t);return new Intl.DateTimeFormat("uz-UZ",{day:"numeric",month:"long",year:"numeric"}).format(e)},a=t=>t?(Date.now()-new Date(t).getTime())/(1e3*60*60*24)<=14:!1;export{r as a,n as f,a as i};
