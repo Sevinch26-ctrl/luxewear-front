@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Bot } from 'lucide-react';
 import Logo from '../Logo/Logo';
-import { TELEGRAM_BOT_URL } from '../../utils/constants';
 import './Footer.css';
 
 const Footer = () => {
@@ -17,7 +16,7 @@ const Footer = () => {
           <p className="footer-slogan">Nafislik har bir tafsilotda.</p>
           <div className="social-links">
             <a href="https://instagram.com" target="_blank" rel="noreferrer">Instagram</a>
-            <a href={TELEGRAM_BOT_URL} target="_blank" rel="noreferrer">Telegram</a>
+            <a href="https://t.me/luxewear_bot" target="_blank" rel="noreferrer">Telegram</a>
             <a href="https://facebook.com" target="_blank" rel="noreferrer">Facebook</a>
           </div>
         </div>
@@ -45,7 +44,7 @@ const Footer = () => {
         <div className="footer-col">
           <h3>Telegram botimiz</h3>
           <p>Do'konni Telegram ichida oching — buyurtma holati va aksiyalardan darhol xabar toping.</p>
-          <a href={TELEGRAM_BOT_URL} target="_blank" rel="noreferrer" className="btn btn-primary footer-bot-link">
+          <a href="https://t.me/luxewear_bot" target="_blank" rel="noreferrer" className="btn btn-primary footer-bot-link">
             <Bot size={17} /> Botni ochish
           </a>
         </div>

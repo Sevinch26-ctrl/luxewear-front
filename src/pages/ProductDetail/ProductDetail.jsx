@@ -71,8 +71,8 @@ const ProductDetail = () => {
           API.get(`/reviews/${id}`).catch(() => ({ data: [] })),
         ]);
         if (cancelled) return;
-        setSimilar(Array.isArray(simRes.data) ? simRes.data : []);
-        setReviews(Array.isArray(revRes.data) ? revRes.data : []);
+        setSimilar(simRes.data || []);
+        setReviews(revRes.data || []);
       } catch (err) {
         if (!cancelled) setNotFound(true);
       } finally {

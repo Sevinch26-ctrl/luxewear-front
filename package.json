@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 5173",
-    "build": "echo VITE_API_URL=$VITE_API_URL && vite build",
+    "build": "vite build",
     "preview": "vite preview --port 4173 --host"
   },
   "dependencies": {

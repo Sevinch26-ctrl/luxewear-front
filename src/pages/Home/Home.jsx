@@ -68,9 +68,9 @@ const Home = ({ ready = true }) => {
           API.get('/products/', { params: { sort_by: 'created_at', size: 8 } }),
         ]);
         if (cancelled) return;
-        setCategories(Array.isArray(catRes.data) ? catRes.data : []);
-        setFeatured(Array.isArray(featRes.data.items) ? featRes.data.items : []);
-        setNewArrivals(Array.isArray(newRes.data.items) ? newRes.data.items : []);
+        setCategories(catRes.data || []);
+        setFeatured(featRes.data.items || []);
+        setNewArrivals(newRes.data.items || []);
       } catch (err) {
         console.error("Bosh sahifa ma'lumotlarini yuklashda xato", err);
       } finally {

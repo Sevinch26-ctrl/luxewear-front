@@ -3,7 +3,6 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Eye, EyeOff, Lightbulb } from 'lucide-react';
 import { AuthContext } from '../../context/AuthContext';
 import { TelegramContext } from '../../context/TelegramContext';
-import { TELEGRAM_BOT_URL } from '../../utils/constants';
 import './Login.css';
 
 const Login = () => {
@@ -106,7 +105,7 @@ const Login = () => {
               Hisobingiz yo'qmi? <Link to={`/royxatdan-otish${next !== '/profil' ? `?next=${encodeURIComponent(next)}` : ''}`}>Ro'yxatdan o'tish</Link>
             </p>
             <p className="auth-hint">
-              <Lightbulb size={15} className="auth-hint-icon" /> Telegram orqali xarid qilish uchun botimizni <a href={TELEGRAM_BOT_URL} target="_blank" rel="noreferrer">shu yerda</a> oching — ro'yxatdan o'tish shart emas.
+              <Lightbulb size={15} className="auth-hint-icon" /> Telegram orqali xarid qilish uchun botimizni <a href="https://t.me/luxewear_bot" target="_blank" rel="noreferrer">shu yerda</a> oching — ro'yxatdan o'tish shart emas.
             </p>
           </form>
         </div>
