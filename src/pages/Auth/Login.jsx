@@ -60,7 +60,7 @@ const Login = () => {
     <div className="auth-page">
       <div className="auth-container">
         <div className="auth-image">
-          <h2>Xush Kelibsiz</h2>
+          <h2>Xush Kelibsiz123</h2>
           <p>LuxeWear olamiga qadam qo'ying</p>
         </div>
         <div className="auth-form-container">
