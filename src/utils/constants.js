@@ -27,6 +27,12 @@ export function getImageUrl(path) {
 // alohida tizimga kirishi kerak bo'ladi).
 export const ADMIN_URL = import.meta.env.VITE_ADMIN_URL || 'http://localhost:5174';
 
+// Telegram bot username (@ belgisiz). .env dagi VITE_BOT_USERNAME orqali
+// sozlanadi — bot manziliga havola beradigan HAR BIR joy shu o'zgaruvchini
+// ishlatishi kerak, hardcoded username yozilmasin.
+export const BOT_USERNAME = import.meta.env.VITE_BOT_USERNAME || 'LuxeWearr_bot';
+export const BOT_URL = `https://t.me/${BOT_USERNAME}`;
+
 // Eslatma: asosiy dizayn tizimi src/styles/variables.css da (CSS
 // o'zgaruvchilari sifatida, mavzuga qarab moslashadi). Bu obyekt faqat
 // CSS o'zgaruvchisi ishlatib bo'lmaydigan kamdan-kam JS holatlar uchun.
